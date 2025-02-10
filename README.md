@@ -27,7 +27,7 @@ VisaTrendWise is a web-based dashboard built for the Visa Hackathon, designed to
 
 ### 1️⃣ Clone the Repository
 
-git clone <https://github.com/your-username/VisaTrendWise.git>\
+git clone <https://github.com/Akshay-1314/VisaHackathon>\
 cd VisaTrendWise
 
 ### 2️⃣ Install Dependencies
