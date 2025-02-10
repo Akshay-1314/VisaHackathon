@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const axios = require("axios");
+const fs = require("fs");
 require("dotenv").config();
 
 const app = express();
@@ -9,12 +10,8 @@ const PORT = process.env.PORT || 6001;
 app.use(express.json());
 app.use(cors());
 
-// Sample dataset stored in the backend with more pricing and business context
-const dataset = [
-  { id: 1, smbId: "SMB123", businessName: "GenZ Fashion", revenue: 10000, preOrders: 50, customerEngagement: 78, creditScore: 700, loanAmountRequested: 5000, productName: "Hoodie", category: "Clothing", baseCost: 1200, avgMarketPrice: 2500 },
-  { id: 2, smbId: "SMB456", businessName: "Urban Outfit", revenue: 15000, preOrders: 30, customerEngagement: 80, creditScore: 750, loanAmountRequested: 8000, productName: "Sneakers", category: "Footwear", baseCost: 3000, avgMarketPrice: 5500 },
-  { id: 3, smbId: "SMB789", businessName: "StreetWear Hub", revenue: 20000, preOrders: 70, customerEngagement: 88, creditScore: 680, loanAmountRequested: 6000, productName: "Jacket", category: "Clothing", baseCost: 2200, avgMarketPrice: 4500 },
-];
+// Load dataset from JSON file
+const dataset = JSON.parse(fs.readFileSync("./data/dataset.json", "utf8"));
 
 // Endpoint to predict price using Gemini API with dataset as first prompt and user input as second prompt
 app.post("/predict-price", async (req, res) => {
@@ -92,7 +89,7 @@ app.post("/check-loan", (req, res) => {
 
     const isEligible = revenueGrowth && preOrderIncrease && goodCredit && reasonableLoanRequest;
 
-    res.json({ eligibility: isEligible ? "Eligible" : "Not Eligible" });
+    res.json({ eligibility: isEligible ? "Eligible" : "Not Eligible", businessName: businessData.businessName });
   } catch (error) {
     console.error("Error checking loan eligibility:", error);
     res.status(500).json({ error: "Internal server error" });
