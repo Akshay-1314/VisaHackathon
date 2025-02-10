@@ -1,101 +1,121 @@
-import Image from "next/image";
+"use client";
+
+import { useState } from "react";
+import axios from "axios";
+import { AppBar, Toolbar, Typography, Container, TextField, Button, Paper, Grid, Box } from "@mui/material";
+import { styled } from "@mui/material/styles";
+import VisaLogo from "/public/visa-logo.png";
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  margin: "auto",
+  maxWidth: 600,
+  textAlign: "center",
+  boxShadow: theme.shadows[5],
+  borderRadius: theme.shape.borderRadius * 2,
+  backgroundColor: "#f4f6f9",
+}));
+
+const StyledButton = styled(Button)(({ theme }) => ({
+  borderRadius: 20,
+  textTransform: "none",
+  fontSize: "16px",
+  fontWeight: "bold",
+}));
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [productName, setProductName] = useState("");
+  const [currentPrice, setCurrentPrice] = useState("");
+  const [predictedPrice, setPredictedPrice] = useState(null);
+  const [smbId, setSmbId] = useState("");
+  const [revenue, setRevenue] = useState("");
+  const [preOrders, setPreOrders] = useState("");
+  const [creditScore, setCreditScore] = useState("");
+  const [loanAmountRequested, setLoanAmountRequested] = useState("");
+  const [loanEligibility, setLoanEligibility] = useState(null);
+  const [businessName, setBusinessName] = useState("");
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  const predictPrice = async () => {
+    try {
+      const response = await axios.post("http://localhost:6001/predict-price", {
+        productName,
+        currentPrice,
+      });
+      setPredictedPrice(response.data.predicted_price);
+    } catch (error) {
+      console.error("Error predicting price:", error);
+    }
+  };
+
+  const checkLoanEligibility = async () => {
+    try {
+      const response = await axios.post("http://localhost:6001/check-loan", {
+        smbId,
+        revenue,
+        preOrders,
+        creditScore,
+        loanAmountRequested,
+      });
+      setLoanEligibility(response.data.eligibility);
+      setBusinessName(response.data.businessName || "");
+    } catch (error) {
+      console.error("Error checking loan eligibility:", error);
+    }
+  };
+
+  return (
+    <Box>
+      <AppBar position="static" sx={{ background: "linear-gradient(90deg, #142C8E 0%, #1A3BA3 100%)" }}>
+        <Toolbar>
+        <img src="/visa-logo.png" alt="Visa Logo" style={{ height: 40, marginRight: 16 }} />
+          <Typography variant="h5" sx={{ flexGrow: 1, color: "white", fontWeight: "bold" }}>
+            VisaTrendWise Dashboard
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      <Container sx={{ mt: 5 }}>
+        <Grid container spacing={4} justifyContent="center">
+          <Grid item xs={12} md={6}>
+            <StyledPaper>
+              <Typography variant="h5" sx={{ color: "#142C8E", fontWeight: "bold" }} gutterBottom>
+                Product Price Prediction
+              </Typography>
+              <TextField fullWidth label="Product Name" margin="normal" onChange={(e) => setProductName(e.target.value)} />
+              <TextField fullWidth label="Current Price" type="number" margin="normal" onChange={(e) => setCurrentPrice(e.target.value)} />
+              <StyledButton fullWidth variant="contained" color="primary" sx={{ mt: 2 }} onClick={predictPrice}>
+                Predict Price
+              </StyledButton>
+              {predictedPrice && (
+                <Typography variant="h6" color="success.main" sx={{ mt: 2 }}>
+                  Predicted Price: ${predictedPrice}
+                </Typography>
+              )}
+            </StyledPaper>
+          </Grid>
+
+          <Grid item xs={12} md={6}>
+            <StyledPaper>
+              <Typography variant="h5" sx={{ color: "#142C8E", fontWeight: "bold" }} gutterBottom>
+                Loan Eligibility Check
+              </Typography>
+              <TextField fullWidth label="SMB ID" margin="normal" onChange={(e) => setSmbId(e.target.value)} />
+              <TextField fullWidth label="Monthly Revenue" type="number" margin="normal" onChange={(e) => setRevenue(e.target.value)} />
+              <TextField fullWidth label="Pre-orders" type="number" margin="normal" onChange={(e) => setPreOrders(e.target.value)} />
+              <TextField fullWidth label="Credit Score" type="number" margin="normal" onChange={(e) => setCreditScore(e.target.value)} />
+              <TextField fullWidth label="Loan Amount Requested" type="number" margin="normal" onChange={(e) => setLoanAmountRequested(e.target.value)} />
+              <StyledButton fullWidth variant="contained" color="secondary" sx={{ mt: 2 }} onClick={checkLoanEligibility}>
+                Check Loan Eligibility
+              </StyledButton>
+              {loanEligibility && (
+                <Typography variant="h6" color="success.main" sx={{ mt: 2 }}>
+                  Business: {businessName} <br /> Loan Eligibility: {loanEligibility}
+                </Typography>
+              )}
+            </StyledPaper>
+          </Grid>
+        </Grid>
+      </Container>
+    </Box>
   );
 }

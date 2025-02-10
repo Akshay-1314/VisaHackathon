@@ -30,51 +30,31 @@ npm install
 
 ### 3️⃣ Start the Development Server
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
 
-Make sure your backend is running on `localhost:6001` for API requests.
-⚙️ API Endpoints
-----------------
-### Predict Price
-**POST** `/predict-price`
-#### Request:
-{\
-"productName": "Hoodie",\
-"currentPrice": 25\
-}
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-#### Response:
-{\
-"predicted_price": 30\
-}
+You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
 
-### Check Loan Eligibility
-**POST** `/check-loan`
-#### Request:
-{\
-"smbId": "12345",\
-"revenue": 5000,\
-"preOrders": 50,\
-"creditScore": 700,\
-"loanAmountRequested": 2000\
-}
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-#### Response:
-{\
-"eligibility": "Approved",\
-"businessName": "Fashion Hub"\
-}
+## Learn More
 
-🏆 Contributing
----------------
-1.  Fork the repo
-2.  Create a new branch (`feature/amazing-feature`)
-3.  Commit changes (`git commit -m 'Add amazing feature'`)
-4.  Push to the branch (`git push origin feature/amazing-feature`)
-5.  Open a PR 🎉
+To learn more about Next.js, take a look at the following resources:
 
-📜 License
-----------
-This project is for the **Visa Hackathon** and follows Visa's hackathon guidelines.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-* * * * *
-💙 **Built with passion for SMBs at the Visa Hackathon**
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
