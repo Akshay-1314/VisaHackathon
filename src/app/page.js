@@ -38,7 +38,7 @@ export default function Home() {
   const predictPrice = async () => {
     setLoadingPrice(true);
     try {
-      const response = await axios.post("http://localhost:6001/predict-price", {
+      const response = await axios.post(process.env.NEXT_PUBLIC_API_URL + "/predict-price", {
         productName,
         currentPrice,
       });
@@ -53,7 +53,7 @@ export default function Home() {
     setLoadingLoan(true);
     setTimeout(async () => {
       try {
-        const response = await axios.post("http://localhost:6001/check-loan", {
+        const response = await axios.post(process.env.NEXT_PUBLIC_API_URL + "/check-loan", {
           smbId,
           revenue,
           preOrders,

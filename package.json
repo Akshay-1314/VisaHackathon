@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"next dev\" \"node server.js\"",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -12,6 +12,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^6.4.3",
+    "concurrently": "^9.1.2",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
