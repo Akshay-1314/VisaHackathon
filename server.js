@@ -8,7 +8,11 @@ const app = express();
 const PORT = process.env.PORT || 6001;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  credentials: true
+}));
 
 // Load dataset from JSON file
 const dataset = JSON.parse(fs.readFileSync("./data/dataset.json", "utf8"));
@@ -24,7 +28,7 @@ app.post("/predict-price", async (req, res) => {
 
     // Find matching product in dataset
     const productData = dataset.find((item) => item.productName.toLowerCase() === productName.toLowerCase());
-    
+
     if (!productData) {
       return res.status(404).json({ error: "Product not found in dataset" });
     }
