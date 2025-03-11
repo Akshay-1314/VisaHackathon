@@ -38,6 +38,7 @@ export default function Home() {
   const predictPrice = async () => {
     setLoadingPrice(true);
     try {
+      console.log("API URL:", process.env.NEXT_PUBLIC_API_URL + "/predict-price");
       const response = await axios.post(process.env.NEXT_PUBLIC_API_URL + "/predict-price", {
         productName,
         currentPrice,
