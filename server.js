@@ -71,7 +71,7 @@ app.post("/predict-price", async (req, res) => {
 // Endpoint to check loan eligibility
 app.post("/check-loan", (req, res) => {
   try {
-    const { smbId, revenue, preOrders, creditScore, loanAmountRequested } = req.body;
+    const { smbId, revenue, preOrders, loanAmountRequested } = req.body;
 
     if (!smbId) {
       return res.status(400).json({ error: "SMB ID is required" });
@@ -84,10 +84,9 @@ app.post("/check-loan", (req, res) => {
 
     const revenueGrowth = revenue >= businessData.revenue;
     const preOrderIncrease = preOrders >= businessData.preOrders;
-    const goodCredit = creditScore >= 650;
     const reasonableLoanRequest = loanAmountRequested <= businessData.revenue * 0.5;
 
-    const isEligible = revenueGrowth && preOrderIncrease && goodCredit && reasonableLoanRequest;
+    const isEligible = revenueGrowth && preOrderIncrease && reasonableLoanRequest;
 
     res.json({ eligibility: isEligible ? "Eligible" : "Not Eligible", businessName: businessData.businessName });
   } catch (error) {

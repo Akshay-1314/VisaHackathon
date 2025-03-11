@@ -2,9 +2,8 @@
 
 import { useState } from "react";
 import axios from "axios";
-import { AppBar, Toolbar, Typography, Container, TextField, Button, Paper, Grid, Box } from "@mui/material";
+import { AppBar, Toolbar, Typography, Container, TextField, Button, Paper, Grid, Box, CircularProgress } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import VisaLogo from "/public/visa-logo.png";
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
@@ -30,12 +29,14 @@ export default function Home() {
   const [smbId, setSmbId] = useState("");
   const [revenue, setRevenue] = useState("");
   const [preOrders, setPreOrders] = useState("");
-  const [creditScore, setCreditScore] = useState("");
   const [loanAmountRequested, setLoanAmountRequested] = useState("");
   const [loanEligibility, setLoanEligibility] = useState(null);
   const [businessName, setBusinessName] = useState("");
+  const [loadingPrice, setLoadingPrice] = useState(false);
+  const [loadingLoan, setLoadingLoan] = useState(false);
 
   const predictPrice = async () => {
+    setLoadingPrice(true);
     try {
       const response = await axios.post("http://localhost:6001/predict-price", {
         productName,
@@ -45,29 +46,33 @@ export default function Home() {
     } catch (error) {
       console.error("Error predicting price:", error);
     }
+    setLoadingPrice(false);
   };
 
   const checkLoanEligibility = async () => {
-    try {
-      const response = await axios.post("http://localhost:6001/check-loan", {
-        smbId,
-        revenue,
-        preOrders,
-        creditScore,
-        loanAmountRequested,
-      });
-      setLoanEligibility(response.data.eligibility);
-      setBusinessName(response.data.businessName || "");
-    } catch (error) {
-      console.error("Error checking loan eligibility:", error);
-    }
+    setLoadingLoan(true);
+    setTimeout(async () => {
+      try {
+        const response = await axios.post("http://localhost:6001/check-loan", {
+          smbId,
+          revenue,
+          preOrders,
+          loanAmountRequested,
+        });
+        setLoanEligibility(response.data.eligibility);
+        setBusinessName(response.data.businessName || "");
+      } catch (error) {
+        console.error("Error checking loan eligibility:", error);
+      }
+      setLoadingLoan(false);
+    }, 1000);
   };
 
   return (
     <Box>
       <AppBar position="static" sx={{ background: "linear-gradient(90deg, #142C8E 0%, #1A3BA3 100%)" }}>
         <Toolbar>
-        <img src="/visa-logo.png" alt="Visa Logo" style={{ height: 40, marginRight: 16 }} />
+          <img src="/visa-logo.png" alt="Visa Logo" style={{ height: 40, marginRight: 16 }} />
           <Typography variant="h5" sx={{ flexGrow: 1, color: "white", fontWeight: "bold" }}>
             VisaTrendWise Dashboard
           </Typography>
@@ -82,13 +87,13 @@ export default function Home() {
                 Product Price Prediction
               </Typography>
               <TextField fullWidth label="Product Name" margin="normal" onChange={(e) => setProductName(e.target.value)} />
-              <TextField fullWidth label="Current Price" type="number" margin="normal" onChange={(e) => setCurrentPrice(e.target.value)} />
-              <StyledButton fullWidth variant="contained" color="primary" sx={{ mt: 2 }} onClick={predictPrice}>
-                Predict Price
+              <TextField fullWidth label="Current Price (INR)" type="number" margin="normal" onChange={(e) => setCurrentPrice(e.target.value)} />
+              <StyledButton fullWidth variant="contained" color="primary" sx={{ mt: 2 }} onClick={predictPrice} disabled={loadingPrice}>
+                {loadingPrice ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Predict Price"}
               </StyledButton>
               {predictedPrice && (
                 <Typography variant="h6" color="success.main" sx={{ mt: 2 }}>
-                  Predicted Price: ${predictedPrice}
+                  Predicted Price: ₹{predictedPrice}
                 </Typography>
               )}
             </StyledPaper>
@@ -100,12 +105,11 @@ export default function Home() {
                 Loan Eligibility Check
               </Typography>
               <TextField fullWidth label="SMB ID" margin="normal" onChange={(e) => setSmbId(e.target.value)} />
-              <TextField fullWidth label="Monthly Revenue" type="number" margin="normal" onChange={(e) => setRevenue(e.target.value)} />
+              <TextField fullWidth label="Monthly Revenue (INR)" type="number" margin="normal" onChange={(e) => setRevenue(e.target.value)} />
               <TextField fullWidth label="Pre-orders" type="number" margin="normal" onChange={(e) => setPreOrders(e.target.value)} />
-              <TextField fullWidth label="Credit Score" type="number" margin="normal" onChange={(e) => setCreditScore(e.target.value)} />
-              <TextField fullWidth label="Loan Amount Requested" type="number" margin="normal" onChange={(e) => setLoanAmountRequested(e.target.value)} />
-              <StyledButton fullWidth variant="contained" color="secondary" sx={{ mt: 2 }} onClick={checkLoanEligibility}>
-                Check Loan Eligibility
+              <TextField fullWidth label="Loan Amount Requested (INR)" type="number" margin="normal" onChange={(e) => setLoanAmountRequested(e.target.value)} />
+              <StyledButton fullWidth variant="contained" color="secondary" sx={{ mt: 2 }} onClick={checkLoanEligibility} disabled={loadingLoan}>
+                {loadingLoan ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Check Loan Eligibility"}
               </StyledButton>
               {loanEligibility && (
                 <Typography variant="h6" color="success.main" sx={{ mt: 2 }}>
